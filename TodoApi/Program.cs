@@ -11,7 +11,17 @@ var app = builder.Build();
 // Configure pipeline - UseMethod
 app.MapGet("/todoitems", async (TodoDb db) => await db.Todos.ToListAsync());
 
-app.MapGet("/todoitems/{id}", async (int id, TodoDb db) => await db.Todos.FindAsync(id));
+app.MapGet("/todoitems/{id}", async (int id, TodoDb db) =>
+{
+    var todo = await db.Todos.FindAsync(id);
+
+    if (todo is null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(todo);
+});
 
 app.MapPost("/todoitems", async (TodoItem todo, TodoDb db) =>
 {
